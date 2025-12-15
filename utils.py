@@ -65,7 +65,7 @@ def generate_random_keypoints(image_shape, num_keypoints, device="cpu", dtype=to
     keypoints = torch.cat([xs, ys], dim=-1)
     return keypoints
 
-def get_descriptors_from_keypoints(model, x, feats):
+def get_descriptors_from_keypoints(model, x, feats, inference=True):
     x, rh1, rw1 = model.preprocess_tensor(x)
     B, _, H1, W1 = x.shape
     M1, K1, H1_map = model.net(x)
@@ -83,12 +83,17 @@ def get_descriptors_from_keypoints(model, x, feats):
     )
 
     features = F.normalize(features, dim=-1)
-
-    return {
-        'keypoints': feats["keypoints"],
-        'scores': feats["scores"],
-        'descriptors': features[0]
-    }
+    if inference:
+        return {
+            'keypoints': feats["keypoints"],
+            'descriptors': features[0]
+        }
+    else:
+        return {
+            'keypoints': feats["keypoints"],
+            'scores': feats["scores"],
+            'descriptors': features[0]
+        }
 
 def cosine_sim(feat0, feat1):
     """
