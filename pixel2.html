@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Coordenadas do Pixel</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      display: inline-block;
+    }
+
+    canvas {
+      max-width: 95vw;   /* limita visualmente o tamanho */
+      max-height: 95vh;  /* sem cortar a imagem */
+      border: 2px solid #333;
+      display: block;
+    }
+
+    #coords {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #00ff88;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 1.4rem;   /* aumenta a fonte */
+      pointer-events: none; /* não interfere no mouse */
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <canvas id="canvas"></canvas>
+    <div id="coords">Passe o mouse sobre a imagem</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const coords = document.getElementById('coords');
+    const img = new Image();
+    img.src = 'UFRGS-01-2017.png'; // troque pelo caminho da sua imagem (ex: "frame4800.jpg")
+
+    img.onload = () => {
+      // mantém as dimensões originais para cálculo preciso
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    };
+
+    canvas.addEventListener('mousemove', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = img.width / rect.width;
+      const scaleY = img.height / rect.height;
+      const x = Math.floor((event.clientX - rect.left) * scaleX);
+      const y = Math.floor((event.clientY - rect.top) * scaleY);
+
+      coords.textContent = `x: ${x} | y: ${y}`;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      coords.textContent = 'Passe o mouse sobre a imagem';
+    });
+  </script>
+</body>
+</html>
